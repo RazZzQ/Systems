@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab2356cfc999b14e8fa86317f389731, type: 3}
+  m_Name: FPSettings
+  m_EditorClassIdentifier: Assembly-CSharp::FPSettings
+  mouseSensitivity: 0.1
+  gamepadSensitivity: 120
+  invertY: 0
+  pitchMin: -45
+  pitchMax: 45
+  lookSmoothing: 0
+  walkSpeed: 4.5
+  acceleration: 20
+  deceleration: 18
+  airControl: 0.35
+  sprintSpeed: 7
+  jumpHeight: 1.35
+  gravity: -25
+  coyoteTime: 0.12
+  jumpBuffer: 0.12
+  crouchToggle: 1
+  crouchSpeedMultiplier: 0.25
+  crouchHeight: 1.2
+  standHeight: 1.8
+  crouchTransitionSpeed: 12
+  groundedStickForce: -2

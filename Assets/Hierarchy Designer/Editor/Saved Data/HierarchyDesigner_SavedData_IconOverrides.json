@@ -1,0 +1,19 @@
+{
+    "items": [
+        {
+            "globalId": "GlobalObjectId_V1-2-864480d9c2958f646a8cc3a83033ebf7-7776105193087262126-750625718",
+            "source": "builtin",
+            "value": "d_Transform Icon"
+        },
+        {
+            "globalId": "GlobalObjectId_V1-2-864480d9c2958f646a8cc3a83033ebf7-3234718827219307415-437689104",
+            "source": "builtin",
+            "value": "d_Transform Icon"
+        },
+        {
+            "globalId": "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0",
+            "source": "builtin",
+            "value": "d_Transform Icon"
+        }
+    ]
+}

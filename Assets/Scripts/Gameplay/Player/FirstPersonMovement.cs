@@ -55,13 +55,6 @@ public class FirstPersonMovement : MonoBehaviour, IPlayerModule
         float speed01 = Mathf.InverseLerp(0f, ctx.settings.sprintSpeed, currentVel.magnitude);
         ctx.events?.onSpeedChanged01?.Invoke(speed01);
 
-        // Pegado al suelo: si estás grounded y cayendo, fija Y a un valor leve hacia abajo
-        if (grounded && ctx.motor.Velocity.y < 0f)
-        {
-            // leve fuerza hacia abajo para evitar “floating”
-            ctx.motor.AddVerticalVelocity(ctx.settings.groundedStickForce - ctx.motor.Velocity.y);
-        }
-
         // Aplicar movimiento al motor
         ctx.motor.Move(currentVel, fdt);
     }

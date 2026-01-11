@@ -17,6 +17,11 @@ public class PlayerInputRouter : MonoBehaviour
     public bool CrouchPressed { get; private set; }
 
     public bool controlEnabled { get; private set; } = true;
+
+    //Interaccion
+    public bool InteractPressed { get; private set; }
+    public bool InteractHeld { get; private set; }
+
     // Llamados por PlayerInput (Invoke Unity Events)
     public void OnMove(InputAction.CallbackContext ctx) { 
         if (!controlEnabled) return; 
@@ -44,6 +49,12 @@ public class PlayerInputRouter : MonoBehaviour
         if (!controlEnabled) return;
         if (ctx.started) CrouchPressed = true;
     }
+    public void OnInteract(InputAction.CallbackContext ctx){
+        if(!controlEnabled) return;
+
+        if(ctx.started) InteractPressed =  true;
+        InteractHeld = ctx.ReadValueAsButton();
+    }
 
     /// Se llama 1 vez por frame (usualmente en Jump.Tick)
     /// para que JumpPressed/CrouchPressed no queden pegados.
@@ -51,6 +62,7 @@ public class PlayerInputRouter : MonoBehaviour
     {
         JumpPressed = false;
         CrouchPressed = false;
+        InteractPressed = false;
     }
     /// Desactiva todo el control del jugador (menús, cinemáticas, minijuegos)
     public void DisableControl()

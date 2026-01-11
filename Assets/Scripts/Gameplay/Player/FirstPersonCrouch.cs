@@ -13,15 +13,20 @@ public class FirstPersonCrouch : MonoBehaviour, IPlayerModule
     [SerializeField] private float eyesStandY = 1.6f; // ajusta a tu gusto
     [SerializeField] private float eyesCrouchY = 1.0f;
 
+    [Header("Stand block check")]
+    [SerializeField] private LayerMask ceilingMask = ~0; // qué capas bloquean pararse
+    [SerializeField] private float headClearancePadding = 0.02f; // margen pequeño
+
     public bool crouching;
     public float currentHeight;
     private float visualsBaseY;
+    private CharacterController cc;
     public bool IsCrouching => crouching;
-
     public void Initialize(PlayerContext ctx)
     {
         this.ctx = ctx;
         move = GetComponent<FirstPersonMovement>();
+        cc = GetComponent<CharacterController>();
 
         currentHeight = ctx.settings.standHeight;
         ApplyCapsule(currentHeight);
@@ -33,7 +38,24 @@ public class FirstPersonCrouch : MonoBehaviour, IPlayerModule
     {
         // Toggle
         if (ctx.settings.crouchToggle && ctx.input.CrouchPressed)
-            SetCrouch(!crouching);
+        {
+            // Si quiere pararse (crouch -> stand), primero validamos techo
+            if (crouching)
+            {
+                if (CanStandUp())
+                    SetCrouch(false);
+                else
+                {
+                    // opcional: feedback con event o debug
+                    // Debug.Log("No puedes pararte: techo encima");
+                }
+            }
+            else
+            {
+                // Siempre puedes agacharte
+                SetCrouch(true);
+            }
+        }
     }
 
     public void FixedTick(float fdt)
@@ -50,6 +72,30 @@ public class FirstPersonCrouch : MonoBehaviour, IPlayerModule
         ApplyVisuals(t);
 
         if (move != null) move.IsCrouching = crouching;
+    }
+    
+    private bool CanStandUp()
+    {
+        if (cc == null) return true;
+
+        // Construimos una cápsula en mundo con la altura de "stand"
+        float standHeight = ctx.settings.standHeight;
+        float radius = cc.radius;
+        Vector3 worldCenter = transform.TransformPoint(cc.center);
+
+        // punto inferior y superior de la cápsula
+        // La cápsula de CharacterController es vertical; calculamos extremos
+        float half = standHeight * 0.5f;
+        Vector3 bottom = worldCenter + Vector3.down * (half - radius);
+        Vector3 top    = worldCenter + Vector3.up   * (half - radius);
+
+        // Pequeño padding para no quedar rozando
+        bottom += Vector3.down * headClearancePadding;
+        top    += Vector3.up   * headClearancePadding;
+
+        // Si hay cualquier colisión en esa cápsula, NO puedes pararte
+        bool blocked = Physics.CheckCapsule(bottom, top, radius, ceilingMask, QueryTriggerInteraction.Ignore);
+        return !blocked;
     }
 
     private void SetCrouch(bool on)

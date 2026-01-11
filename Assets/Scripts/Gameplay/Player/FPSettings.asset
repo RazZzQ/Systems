@@ -15,8 +15,8 @@ MonoBehaviour:
   mouseSensitivity: 0.1
   gamepadSensitivity: 120
   invertY: 0
-  pitchMin: -45
-  pitchMax: 45
+  pitchMin: -55
+  pitchMax: 55
   lookSmoothing: 0
   walkSpeed: 4.5
   acceleration: 20

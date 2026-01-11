@@ -8,9 +8,9 @@ using Unity.Cinemachine;
 public class PlayerBrain : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Transform cameraYawRoot;   // normalmente el Player root
-    [SerializeField] private Transform cameraPitchRoot; // CameraTarget
-    [SerializeField] private CinemachineCamera MainCamera;
+    [SerializeField] private Transform cameraYawRoot;
+    [SerializeField] private Transform cameraPitchRoot;
+    [SerializeField] private CinemachineCamera mainCamera;
 
     [Header("Input")]
     [SerializeField] private PlayerInputRouter input;
@@ -25,41 +25,59 @@ public class PlayerBrain : MonoBehaviour
     private IPlayerModule[] modules;
     private IMotor motor;
 
+    private bool lastControlEnabled;
+
     private void Awake()
     {
-        // Obtiene el motor por interfaz (no se acopla a CharacterMotorCC)
         motor = GetComponent<IMotor>();
-        if (motor == null)
-        {
-            // fallback: motor CC
-            motor = GetComponent<CharacterMotorCC>();
-        }
+        if (motor == null) motor = GetComponent<CharacterMotorCC>();
 
         ctx = new PlayerContext
         {
             playerRoot = transform,
             cameraYawRoot = cameraYawRoot ? cameraYawRoot : transform,
             cameraPitchRoot = cameraPitchRoot,
-            mainCamera = MainCamera,
+            mainCamera = mainCamera,
             motor = motor,
             events = events,
             input = input,
             settings = settings
         };
-        
-        // Encuentra todos los módulos en el mismo GO
+
         modules = GetComponents<IPlayerModule>();
         for (int i = 0; i < modules.Length; i++)
             modules[i].Initialize(ctx);
+
+        lastControlEnabled = input != null && input.controlEnabled;
     }
 
     private void Update()
     {
         float dt = Time.deltaTime;
+
+        // Emitir input para UI/anim (sin acoplar)
+        if (input != null)
+        {
+            events?.onMoveInput?.Invoke(input.Move);
+            events?.onLookInput?.Invoke(input.Look);
+
+            float moveMag01 = Mathf.Clamp01(input.Move.magnitude);
+            events?.onMoveMagnitude01?.Invoke(moveMag01);
+
+            // eventos de enable/disable control
+            if (input.controlEnabled != lastControlEnabled)
+            {
+                lastControlEnabled = input.controlEnabled;
+                if (lastControlEnabled) events?.onControlEnabled?.Invoke();
+                else events?.onControlDisabled?.Invoke();
+            }
+        }
+
         for (int i = 0; i < modules.Length; i++)
             modules[i].Tick(dt);
 
-        ctx.input.ConsumeOneFrameButtons();
+        // Importantísimo: consumir one-shots al FINAL
+        ctx.input?.ConsumeOneFrameButtons();
     }
 
     private void FixedUpdate()
@@ -68,4 +86,8 @@ public class PlayerBrain : MonoBehaviour
         for (int i = 0; i < modules.Length; i++)
             modules[i].FixedTick(fdt);
     }
+
+    // Hooks para futuro (si luego haces health/state)
+    public void Die() => events?.onDied?.Invoke();
+    public void Respawn() => events?.onRespawned?.Invoke();
 }

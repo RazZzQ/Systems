@@ -7,6 +7,7 @@ using Unity.Cinemachine;
 /// Ej: SFX, UI, anim, recoil, FOV.
 public class PlayerEvents
 {
+    // Locomotion
     public UnityEvent onGrounded;
     public UnityEvent onAirborne;
     public UnityEvent onJump;
@@ -18,7 +19,18 @@ public class PlayerEvents
     public UnityEvent onSprintStart;
     public UnityEvent onSprintEnd;
 
-    public UnityEvent<float> onSpeedChanged01; // 0..1 para UI
+    public UnityEvent<float> onSpeedChanged01;   // 0..1 (UI)
+    public UnityEvent<float> onMoveMagnitude01;  // 0..1 (input magnitude)
+    public UnityEvent<Vector2> onMoveInput;      // raw move input
+    public UnityEvent<Vector2> onLookInput;      // raw look input
+
+    // Control state
+    public UnityEvent onControlEnabled;
+    public UnityEvent onControlDisabled;
+
+    // Health / state hooks (para escalar luego)
+    public UnityEvent onDied;
+    public UnityEvent onRespawned;
 }
 
 /// Contexto compartido entre módulos.
